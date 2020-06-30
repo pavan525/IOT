@@ -1,2 +1,2 @@
-# IOT
-Internet of things
+# Internet-of-Things
+IoT

@@ -1,0 +1,34 @@
+import requests,tweepy
+import os
+
+
+def twitter_api():
+    access_token = "enter your key here"
+    access_token_secret = "enter your key here"
+    consumer_key = "enter your key here"
+    consumer_secret = "enter your key here"
+
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+    auth.set_access_token(access_token, access_token_secret)
+    api = tweepy.API(auth)
+    return api
+
+
+def tweet_image(url, message):
+    api = twitter_api()
+    filename = 'temp.jpg'
+    request = requests.get(url, stream=True)
+    if request.status_code == 200:
+        with open(filename, 'wb') as image:
+            for chunk in request:
+                image.write(chunk)
+
+        api.update_with_media(filename, status=message)
+        os.remove(filename)
+    else:
+        print("Unable to download image")
+
+
+url = "https://miro.medium.com/max/1024/1*92OdlxNqI3iChI5kNl1MFg.jpeg"
+message = "Jagadeesh Maroju,Sai Pavan Vattem and Akhil Teja Kanugolu-IoT tweeting with text and image"
+tweet_image(url, message)
