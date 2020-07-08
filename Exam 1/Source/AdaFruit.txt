@@ -1,0 +1,16 @@
+import requests, json
+import threading
+from Adafruit_IO import Client, Feed, Data
+
+aio = Client("aio_ZTXi69IEtwFr7UfqXYoMk4kgkZGW")
+def run_check():
+    threading.Timer(60.0, run_check).start()
+    url = "https://api.thingspeak.com/channels/1094406/feeds.json?api_key=19YWSHHQJHGL7GAN&results=2"
+    req = requests.get(url)
+    resp = json.loads(req.content)
+    print(resp)
+    for i in range(1, 8):
+        key = (resp['channel']['field' + str(i)])
+        value = (resp['feeds'][0]['field' + str(i)])
+        aio.send(key, value)
+run_check()

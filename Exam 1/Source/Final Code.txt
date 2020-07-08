@@ -1,0 +1,224 @@
+//infinite Xpro
+// firstly need to add i2c library 
+//thingspeak code
+#include <SoftwareSerial.h>
+#include <DHT.h>
+#define DHTPIN 8     // what pin we're connected to
+#define DHTTYPE DHT11   // DHT 22  (AM2302)
+DHT dht(DHTPIN, DHTTYPE); //// Initialize DHT sensor for normal 16mhz Arduino
+
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BMP280.h>
+Adafruit_BMP280 bmp; // I2C
+
+
+#define RX 2
+#define TX 3
+
+unsigned long duration;
+unsigned long starttime;
+unsigned long sampletime_ms = 2000; 
+unsigned long lowpulseoccupancy = 0;
+float ratio = 0;
+float concentration = 0;
+
+int ledGreen = 9;
+int ledRed = 10;
+
+String AP = "RowdyGirls";       // AP NAME
+String PASS = "Besties@405"; // AP PASSWORD
+String API = "GD4VT8DLGSV7Q5S3";   // Write API KEY
+String HOST = "api.thingspeak.com";
+String PORT = "80";
+int countTrueCommand;
+int countTimeCommand; 
+boolean found = false; 
+
+SoftwareSerial esp8266(RX,TX);   
+//thingspeak code close
+
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(0x27,16,2);  // set the LCD address to 0x27 for a 16 chars and 2 line display 
+float temp;
+float hum;
+int GasValue;
+int light;
+
+void setup() 
+{
+ lcd.init();                       // initialize the lcd
+ lcd.backlight(); 
+ dht.begin();
+ bmp.begin();
+
+ pinMode(ledRed, OUTPUT); 
+ pinMode(ledGreen, OUTPUT);
+
+
+ //thingspeak code
+ Serial.begin(9600);
+  esp8266.begin(115200);
+  sendCommand("AT",5,"OK");
+  sendCommand("AT+CWMODE=1",5,"OK");
+  sendCommand("AT+CWJAP=\""+ AP +"\",\""+ PASS +"\"",20,"OK");
+ //thingspeak code close
+ 
+}
+
+void loop() 
+{
+
+//Temp & Hum
+//int readData = DHT.read22(dataPin); // Reads the data from the sensor
+temp = dht.readTemperature();
+hum = dht.readHumidity();
+
+//Gas Code
+GasValue = analogRead(0);  
+Serial.print(GasValue, DEC);
+
+//light code
+light=analogRead(A1);
+Serial.println("Light = " + String(light));
+
+lcd.clear();
+lcd.setCursor(0,0);
+lcd.print("Light = ");
+lcd.print(int(light));
+delay(4000);
+
+lcd.clear();
+lcd.setCursor(0,0);
+lcd.print("Temp = ");
+lcd.print(temp);
+lcd.print(" C");
+lcd.setCursor(0,1);
+lcd.print("Humidity = ");
+lcd.print(hum);
+lcd.print(" %");
+delay(4000);
+
+lcd.clear();
+lcd.setCursor(0,0);
+lcd.print(" Air Qual = ");
+lcd.print(GasValue);
+
+ //barometer code
+
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("temp(B) ");
+    lcd.print(bmp.readTemperature());
+    lcd.println(" *C");
+    delay(4000);
+
+   
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("Pressure(Pa):");
+    lcd.setCursor(0,1);
+    lcd.print(bmp.readPressure());
+    delay(4000);
+
+    
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("Altitude (m): ");
+    lcd.setCursor(0,1);
+    lcd.print(bmp.readAltitude(1013.25));
+    delay(4000);
+
+//Dust Code
+duration = pulseIn(6, LOW);
+  lowpulseoccupancy = lowpulseoccupancy+duration;
+  if ((millis()-starttime) >= sampletime_ms) //if the sampel time = = 30s
+  {
+    ratio = lowpulseoccupancy/(sampletime_ms*10.0);  
+    concentration = 1.1*pow(ratio,3)-3.8*pow(ratio,2)+520*ratio+0.62; 
+    Serial.print("Concentration = ");
+    Serial.print(concentration);
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("Concentration:");
+    lcd.setCursor(0,1);
+    lcd.print(concentration);
+    lcd.print(" pcs/0.01cf");
+    delay(4000);
+    Serial.println(" pcs/0.01cf");
+    Serial.println("\n");
+    lowpulseoccupancy = 0;
+    starttime = millis();
+  }
+
+if(light<=70){
+  digitalWrite(ledRed, HIGH);
+  digitalWrite(ledGreen, LOW);
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Warning");
+  lcd.setCursor(0,1);
+  lcd.print("High Sensor Value");
+
+}
+else{
+  digitalWrite(ledRed, LOW);
+  digitalWrite(ledGreen, HIGH);
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("All sensor values");
+  lcd.setCursor(0,1);
+  lcd.print("Good");
+ 
+}
+int lightVal=int(light);
+float pressure=bmp.readPressure();
+float altitude=bmp.readAltitude(1013.25);
+
+
+
+//thingspeak code 
+String getData = "GET /update?api_key="+ API +"&field1="+temp+"&field2="+hum+"&field3="+GasValue+"&field4="+lightVal+"&field5="+pressure+"&field6="+altitude+"&field7="+concentration;
+ sendCommand("AT+CIPMUX=1",5,"OK");
+ sendCommand("AT+CIPSTART=0,\"TCP\",\""+ HOST +"\","+ PORT,15,"OK");
+ sendCommand("AT+CIPSEND=0," +String(getData.length()+4),4,">");
+ esp8266.println(getData);
+ delay(1500);
+ countTrueCommand++;
+ sendCommand("AT+CIPCLOSE=0",5,"OK");
+//thingspeak code close
+
+}
+
+void sendCommand(String command, int maxTime, char readReplay[]) {
+  Serial.print(countTrueCommand);
+  Serial.print(". at command => ");
+  Serial.print(command);
+  Serial.print(" ");
+  while(countTimeCommand < (maxTime*1))
+  {
+    esp8266.println(command);//at+cipsend
+    if(esp8266.find(readReplay))//ok
+    {
+      found = true;
+      break;
+    }
+  
+    countTimeCommand++;
+  }
+  
+  if(found == true)
+  {
+    Serial.println("OYI");
+    countTrueCommand++;
+    countTimeCommand = 0;
+  }
+  
+  if(found == false)
+  {
+    Serial.println("Fail");
+    countTrueCommand = 0;
+    countTimeCommand = 0;
+  }
+  
+  found = false;
+ }
