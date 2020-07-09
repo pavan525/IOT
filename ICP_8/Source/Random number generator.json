@@ -1,0 +1,155 @@
+[
+    {
+        "id": "bb51c6a1.f39368",
+        "type": "tab",
+        "label": "Random Number Generator",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "847abdd3.a6f78",
+        "type": "inject",
+        "z": "bb51c6a1.f39368",
+        "name": "",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 100,
+        "y": 100,
+        "wires": [
+            [
+                "78d3656c.fd2d54"
+            ]
+        ]
+    },
+    {
+        "id": "78d3656c.fd2d54",
+        "type": "function",
+        "z": "bb51c6a1.f39368",
+        "name": "Random Number Generator",
+        "func": "msg_num = Math.floor((Math.random() * 100) + 1);\nmsg = {payload: msg_num}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 290,
+        "y": 140,
+        "wires": [
+            [
+                "404a5f20.a6d528",
+                "e6d50e8.1cce4f"
+            ]
+        ]
+    },
+    {
+        "id": "e6d50e8.1cce4f",
+        "type": "switch",
+        "z": "bb51c6a1.f39368",
+        "name": "",
+        "property": "payload.analyze",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "lte",
+                "v": "49",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "50",
+                "vt": "num"
+            },
+            {
+                "t": "gt",
+                "v": "50",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 3,
+        "x": 150,
+        "y": 260,
+        "wires": [
+            [
+                "3eed2f9b.f39558"
+            ],
+            [
+                "71e0f5ab.bb78ec"
+            ],
+            [
+                "7e70eca7.fa9f74"
+            ]
+        ]
+    },
+    {
+        "id": "404a5f20.a6d528",
+        "type": "debug",
+        "z": "bb51c6a1.f39368",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 450,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "3eed2f9b.f39558",
+        "type": "debug",
+        "z": "bb51c6a1.f39368",
+        "name": "lessThan49",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 450,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "71e0f5ab.bb78ec",
+        "type": "debug",
+        "z": "bb51c6a1.f39368",
+        "name": "=50",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 450,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "7e70eca7.fa9f74",
+        "type": "debug",
+        "z": "bb51c6a1.f39368",
+        "name": "Greater than 50",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 450,
+        "y": 340,
+        "wires": []
+    }
+]

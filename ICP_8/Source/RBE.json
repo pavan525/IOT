@@ -1,0 +1,84 @@
+[
+    {
+        "id": "d015852d.4ff418",
+        "type": "tab",
+        "label": "RBE",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "a1a6a20e.2193f",
+        "type": "inject",
+        "z": "d015852d.4ff418",
+        "name": "",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "10",
+        "payloadType": "num",
+        "x": 90,
+        "y": 60,
+        "wires": [
+            [
+                "62085586.5da624"
+            ]
+        ]
+    },
+    {
+        "id": "6acd33ac.662024",
+        "type": "inject",
+        "z": "d015852d.4ff418",
+        "name": "",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "5",
+        "payloadType": "num",
+        "x": 90,
+        "y": 100,
+        "wires": [
+            [
+                "62085586.5da624"
+            ]
+        ]
+    },
+    {
+        "id": "62085586.5da624",
+        "type": "rbe",
+        "z": "d015852d.4ff418",
+        "name": "",
+        "func": "rbe",
+        "gap": "",
+        "start": "",
+        "inout": "out",
+        "property": "payload",
+        "x": 280,
+        "y": 80,
+        "wires": [
+            [
+                "dd549d89.ed197"
+            ]
+        ]
+    },
+    {
+        "id": "dd549d89.ed197",
+        "type": "debug",
+        "z": "d015852d.4ff418",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 420,
+        "y": 100,
+        "wires": []
+    }
+]

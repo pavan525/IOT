@@ -1,0 +1,82 @@
+[
+    {
+        "id": "a3552c4a.b79d8",
+        "type": "tab",
+        "label": "Change Node",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "3056bada.c7e1ce",
+        "type": "inject",
+        "z": "a3552c4a.b79d8",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "hello",
+        "payloadType": "str",
+        "x": 150,
+        "y": 120,
+        "wires": [
+            [
+                "a9b3811f.d69998"
+            ]
+        ]
+    },
+    {
+        "id": "a9b3811f.d69998",
+        "type": "change",
+        "z": "a3552c4a.b79d8",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "this is not being analyzed",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 280,
+        "y": 180,
+        "wires": [
+            [
+                "7676d268.e26d3c"
+            ]
+        ]
+    },
+    {
+        "id": "7676d268.e26d3c",
+        "type": "debug",
+        "z": "a3552c4a.b79d8",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 450,
+        "y": 260,
+        "wires": []
+    }
+]
